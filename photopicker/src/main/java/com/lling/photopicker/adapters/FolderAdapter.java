@@ -1,6 +1,7 @@
 package com.lling.photopicker.adapters;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,9 +11,13 @@ import android.widget.TextView;
 
 import com.lling.photopicker.R;
 import com.lling.photopicker.beans.PhotoFolder;
-import com.lling.photopicker.utils.ImageLoader;
 import com.lling.photopicker.utils.OtherUtils;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
+import com.nostra13.universalimageloader.core.imageaware.ImageAware;
+import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -25,12 +30,25 @@ public class FolderAdapter extends BaseAdapter {
 
     List<PhotoFolder> mDatas;
     Context mContext;
+    protected DisplayImageOptions options_head; // 设置图片显示相关参数
+
     int mWidth;
+    protected com.nostra13.universalimageloader.core.ImageLoader imageLoader_head;
+
 
     public FolderAdapter(Context context, List<PhotoFolder> mDatas) {
         this.mDatas = mDatas;
         this.mContext = context;
         mWidth = OtherUtils.dip2px(context, 90);
+        imageLoader_head = com.nostra13.universalimageloader.core.ImageLoader.getInstance();
+        options_head = new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.ic_stub) // 设置图片下载期间显示的图片
+                .showImageForEmptyUri(R.drawable.ic_stub) // 设置图片URI为空或是错误的时候显示的图片
+                .showImageOnFail(R.drawable.ic_stub) // 设置图片加载或解码过程中发生错误显示的图片
+                .cacheInMemory(true) // 设置下载的图片是否缓存在内存中
+                .cacheOnDisk(true) // 设置下载的图片是否缓存在SD卡中
+                .displayer(new SimpleBitmapDisplayer())
+                .build(); // 构建完成
     }
 
     @Override
@@ -53,7 +71,6 @@ public class FolderAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return position;
     }
-
 
 
     @Override
@@ -80,13 +97,17 @@ public class FolderAdapter extends BaseAdapter {
         }
         holder.selectIV.setVisibility(View.GONE);
         holder.photoIV.setImageResource(R.drawable.ic_photo_loading);
-        if(folder.isSelected()) {
+        if (folder.isSelected()) {
             holder.selectIV.setVisibility(View.VISIBLE);
         }
         holder.folderNameTV.setText(folder.getName());
-        holder.photoNumTV.setText(folder.getPhotoList().size() + "张");
-        ImageLoader.getInstance().display(folder.getPhotoList().get(0).getPath(), holder.photoIV,
-                mWidth, mWidth);
+
+            holder.photoNumTV.setText(folder.getPhotoList().size() + "张");
+        // 新闻图片显示
+        ImageAware imageAware = new ImageViewAware(holder.photoIV, false);
+        File file = new File(folder.getPhotoList().get(0).getPath());
+
+        imageLoader_head.displayImage(Uri.fromFile(file).toString(), imageAware, options_head);
         return convertView;
     }
 
