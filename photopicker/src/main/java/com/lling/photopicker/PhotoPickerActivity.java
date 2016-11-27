@@ -164,9 +164,12 @@ public class PhotoPickerActivity extends Activity {
      * 初始化选项参数
      */
     private void initIntentParams() {
+
+
         mIsShowCamera = getIntent().getBooleanExtra(EXTRA_SHOW_CAMERA, false);
         mSelectMode = getIntent().getIntExtra(EXTRA_SELECT_MODE, MODE_SINGLE);
         mMaxNum = getIntent().getIntExtra(EXTRA_MAX_MUN, DEFAULT_NUM);
+
         if (mSelectMode == MODE_MULTI) {
             //如果是多选模式，需要将确定按钮初始化以及绑定事件
             findViewById(R.id.commit).setVisibility(View.VISIBLE);
@@ -188,10 +191,12 @@ public class PhotoPickerActivity extends Activity {
                 R.string.photos_num, mPhotoLists.size()));
 
         mPhotoAdapter = new PhotoAdapter(this, mPhotoLists);
+
         mPhotoAdapter.setIsShowCamera(mIsShowCamera);
         mPhotoAdapter.setSelectMode(mSelectMode);
         mPhotoAdapter.setMaxNum(mMaxNum);
         mGridView.setAdapter(mPhotoAdapter);
+
         Set<String> keys = mFolderMap.keySet();
         final List<PhotoFolder> folders = new ArrayList<>();
         for (String key : keys) {
@@ -210,8 +215,17 @@ public class PhotoPickerActivity extends Activity {
                 toggleFolderList(folders);
             }
         });
+        if (mSelectMode == MODE_SINGLE) {
+            mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    List<Photo> mSelectList = new ArrayList<>();
+                    mSelectList.add(mPhotoAdapter.getItem(position));
+                    returnData(mSelectList);
+                }
+            });
+        }
 
-//                selectPhoto(mPhotoAdapter.getItem(position));
     }
 
 

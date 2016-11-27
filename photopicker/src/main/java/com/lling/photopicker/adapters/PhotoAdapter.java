@@ -225,12 +225,6 @@ public class PhotoAdapter extends BaseAdapter {
                 }
             } else {
                 holder.selectView.setVisibility(View.GONE);
-                convertView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mSelectedPhotos.add(photo);
-                    }
-                });
             }
             // 新闻图片显示
             ImageAware imageAware = new ImageViewAware(holder.photoImageView, false);
