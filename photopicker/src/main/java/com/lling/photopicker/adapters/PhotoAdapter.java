@@ -1,12 +1,16 @@
 package com.lling.photopicker.adapters;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -24,6 +28,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.lling.photopicker.PhotoPickerActivity.REQUEST_CAMERA;
+import static com.lling.photopicker.R.id.checkmark;
+
 /**
  * @Class: PhotoAdapter
  * @Description: 图片适配器
@@ -34,10 +41,11 @@ public class PhotoAdapter extends BaseAdapter {
 
     private static final int TYPE_CAMERA = 0;
     private static final int TYPE_PHOTO = 1;
-
+    protected DisplayImageOptions options_head; // 设置图片显示相关参数
+    protected com.nostra13.universalimageloader.core.ImageLoader imageLoader_head;
     private List<Photo> mDatas;
     //存放已选中的Photo数据
-    private List<String> mSelectedPhotos;
+    private List<Photo> mSelectedPhotos;
     private Context mContext;
     private int mWidth;
     //是否显示相机，默认不显示
@@ -46,16 +54,16 @@ public class PhotoAdapter extends BaseAdapter {
     private int mSelectMode = PhotoPickerActivity.MODE_SINGLE;
     //图片选择数量
     private int mMaxNum = PhotoPickerActivity.DEFAULT_NUM;
-
-    protected DisplayImageOptions options_head; // 设置图片显示相关参数
-    private View.OnClickListener mOnPhotoClick;
-    private PhotoClickCallBack mCallBack;
+    /**
+     * 拍照时存储拍照结果的临时文件
+     */
+    private File mTmpFile;
 
     public PhotoAdapter(Context context, List<Photo> mDatas) {
         this.mDatas = mDatas;
         this.mContext = context;
         int screenWidth = OtherUtils.getWidthInPx(mContext);
-        mWidth = (screenWidth - OtherUtils.dip2px(mContext, 4))/3;
+        mWidth = (screenWidth - OtherUtils.dip2px(mContext, 4)) / 3;
         imageLoader_head = com.nostra13.universalimageloader.core.ImageLoader.getInstance();
         options_head = new DisplayImageOptions.Builder()
                 .showImageOnLoading(R.drawable.ic_stub) // 设置图片下载期间显示的图片
@@ -74,7 +82,7 @@ public class PhotoAdapter extends BaseAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        if(getItem(position) != null && getItem(position).isCamera()) {
+        if (getItem(position) != null && getItem(position).isCamera()) {
             return TYPE_CAMERA;
         } else {
             return TYPE_PHOTO;
@@ -88,7 +96,7 @@ public class PhotoAdapter extends BaseAdapter {
 
     @Override
     public Photo getItem(int position) {
-        if(mDatas == null || mDatas.size() == 0){
+        if (mDatas == null || mDatas.size() == 0) {
             return null;
         }
         return mDatas.get(position);
@@ -120,24 +128,19 @@ public class PhotoAdapter extends BaseAdapter {
         this.mMaxNum = maxNum;
     }
 
-    public void setPhotoClickCallBack(PhotoClickCallBack callback) {
-        mCallBack = callback;
-    }
-
 
     /**
      * 获取已选中相片
+     *
      * @return
      */
-    public List<String> getmSelectedPhotos() {
+    public List<Photo> getmSelectedPhotos() {
         return mSelectedPhotos;
     }
 
     public void setSelectMode(int selectMode) {
         this.mSelectMode = selectMode;
-        if(mSelectMode == PhotoPickerActivity.MODE_MULTI) {
-            initMultiMode();
-        }
+        initMultiMode();
     }
 
     /**
@@ -145,40 +148,47 @@ public class PhotoAdapter extends BaseAdapter {
      */
     private void initMultiMode() {
         mSelectedPhotos = new ArrayList<>();
-        mOnPhotoClick = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String path = v.findViewById(R.id.imageview_photo).getTag().toString();
-                if(mSelectedPhotos.contains(path)) {
-                    v.findViewById(R.id.mask).setVisibility(View.GONE);
-                    v.findViewById(R.id.checkmark).setSelected(false);
-                    mSelectedPhotos.remove(path);
-                } else {
-                    if(mSelectedPhotos.size() >= mMaxNum) {
-                        Toast.makeText(mContext, R.string.msg_maxi_capacity,
-                                Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    mSelectedPhotos.add(path);
-                    v.findViewById(R.id.mask).setVisibility(View.VISIBLE);
-                    v.findViewById(R.id.checkmark).setSelected(true);
-                }
-                if(mCallBack != null) {
-                    mCallBack.onPhotoClick();
-                }
-            }
-        };
+    }
+
+    public File getTmpFile() {
+        return mTmpFile;
+    }
+
+    /**
+     * 选择相机
+     */
+    private void showCamera() {
+        // 跳转到系统照相机
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (cameraIntent.resolveActivity(mContext.getPackageManager()) != null) {
+            // 设置系统相机拍照后的输出路径
+            // 创建临时文件
+            mTmpFile = OtherUtils.createFile(mContext);
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mTmpFile));
+            ((Activity) mContext).startActivityForResult(cameraIntent, REQUEST_CAMERA);
+        } else {
+            Toast.makeText(mContext, R.string.msg_no_camera, Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if(getItemViewType(position) == TYPE_CAMERA) {
+        if (getItemViewType(position) == TYPE_CAMERA) {
             convertView = LayoutInflater.from(mContext).inflate(
                     R.layout.item_camera_layout, null);
             convertView.setTag(null);
             //设置高度等于宽度
             GridView.LayoutParams lp = new GridView.LayoutParams(mWidth, mWidth);
             convertView.setLayoutParams(lp);
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (isShowCamera()) {
+                        showCamera();
+                    }
+                }
+            });
         } else {
             ViewHolder holder;
             if (convertView == null) {
@@ -186,27 +196,41 @@ public class PhotoAdapter extends BaseAdapter {
                 convertView = LayoutInflater.from(mContext).inflate(
                         R.layout.item_photo_layout, null);
                 holder.photoImageView = (ImageView) convertView.findViewById(R.id.imageview_photo);
-                holder.selectView = (ImageView) convertView.findViewById(R.id.checkmark);
-                holder.maskView = convertView.findViewById(R.id.mask);
-                holder.wrapLayout = (FrameLayout) convertView.findViewById(R.id.wrap_layout);
+                holder.selectView = (CheckBox) convertView.findViewById(checkmark);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            Photo photo = getItem(position);
-            if(mSelectMode == PhotoPickerActivity.MODE_MULTI) {
-                holder.wrapLayout.setOnClickListener(mOnPhotoClick);
-                holder.selectView.setVisibility(View.VISIBLE);
-                if(mSelectedPhotos != null && mSelectedPhotos.contains(photo.getPath())) {
-                    holder.selectView.setSelected(true);
-                    holder.maskView.setVisibility(View.VISIBLE);
+            final Photo photo = getItem(position);
+            if (mSelectMode == PhotoPickerActivity.MODE_MULTI) {
+                holder.selectView.setSelected(true);
+                holder.selectView.setOnCheckedChangeListener(new android.widget.CompoundButton.OnCheckedChangeListener() {
+
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView,
+                                                 boolean isChecked) {
+                        // TODO Auto-generated method stub
+                        if (isChecked) {
+                            mSelectedPhotos.add(photo);
+                        } else {
+                            mSelectedPhotos.remove(photo);
+                        }
+                    }
+                });
+                if (mSelectedPhotos != null && mSelectedPhotos.contains(photo)) {
+                    holder.selectView.setChecked(true);
                 } else {
-                    holder.selectView.setSelected(false);
-                    holder.maskView.setVisibility(View.GONE);
+                    holder.selectView.setChecked(false);
                 }
             } else {
                 holder.selectView.setVisibility(View.GONE);
+                convertView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mSelectedPhotos.add(photo);
+                    }
+                });
             }
             // 新闻图片显示
             ImageAware imageAware = new ImageViewAware(holder.photoImageView, false);
@@ -217,19 +241,9 @@ public class PhotoAdapter extends BaseAdapter {
         return convertView;
     }
 
-    protected com.nostra13.universalimageloader.core.ImageLoader imageLoader_head;
 
     private class ViewHolder {
         private ImageView photoImageView;
-        private ImageView selectView;
-        private View maskView;
-        private FrameLayout wrapLayout;
-    }
-
-    /**
-     * 多选时，点击相片的回调接口
-     */
-    public interface PhotoClickCallBack {
-        void onPhotoClick();
+        private CheckBox selectView;
     }
 }

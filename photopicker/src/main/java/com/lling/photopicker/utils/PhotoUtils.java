@@ -28,10 +28,12 @@ public class PhotoUtils {
         Map<String, PhotoFolder> folderMap = new HashMap<>();
 
         String allPhotosKey = "所有图片";
+
         PhotoFolder allFolder = new PhotoFolder();
         allFolder.setName(allPhotosKey);
         allFolder.setDirPath(allPhotosKey);
         allFolder.setPhotoList(new ArrayList<Photo>());
+
         folderMap.put(allPhotosKey, allFolder);
 
         Uri imageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
