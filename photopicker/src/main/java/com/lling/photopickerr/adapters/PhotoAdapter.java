@@ -1,10 +1,12 @@
-package com.lling.photopicker.adapters;
+package com.lling.photopickerr.adapters;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +17,10 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.lling.photopicker.PhotoPickerActivity;
-import com.lling.photopicker.R;
-import com.lling.photopicker.beans.Photo;
-import com.lling.photopicker.utils.OtherUtils;
+import com.lling.photopickerr.PhotoPickerActivity;
+import com.lling.photopickerr.R;
+import com.lling.photopickerr.beans.Photo;
+import com.lling.photopickerr.utils.OtherUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
@@ -28,13 +30,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.lling.photopicker.PhotoPickerActivity.REQUEST_CAMERA;
-import static com.lling.photopicker.R.id.checkmark;
+import static com.lling.photopickerr.PhotoPickerActivity.REQUEST_CAMERA;
+import static com.lling.photopickerr.R.id.checkmark;
 
 /**
  * @Class: PhotoAdapter
  * @Description: 图片适配器
- * @author: lling(www.liuling123.com)
+ * @author: wangliang
  * @Date: 2015/11/4
  */
 public class PhotoAdapter extends BaseAdapter {
@@ -161,10 +163,17 @@ public class PhotoAdapter extends BaseAdapter {
         // 跳转到系统照相机
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (cameraIntent.resolveActivity(mContext.getPackageManager()) != null) {
-            // 设置系统相机拍照后的输出路径
-            // 创建临时文件
-            mTmpFile = OtherUtils.createFile(mContext);
-            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mTmpFile));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                mTmpFile = OtherUtils.createFile(mContext);
+                Uri contentUri = FileProvider.getUriForFile(mContext, "com.jishang.yunji.fileprovider", mTmpFile);
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
+
+            } else {
+                // 设置系统相机拍照后的输出路径
+                // 创建临时文件
+                mTmpFile = OtherUtils.createFile(mContext);
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mTmpFile));
+            }
             ((Activity) mContext).startActivityForResult(cameraIntent, REQUEST_CAMERA);
         } else {
             Toast.makeText(mContext, R.string.msg_no_camera, Toast.LENGTH_SHORT).show();

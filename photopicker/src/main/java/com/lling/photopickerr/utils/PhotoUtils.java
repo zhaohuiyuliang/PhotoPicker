@@ -1,4 +1,4 @@
-package com.lling.photopicker.utils;
+package com.lling.photopickerr.utils;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -6,8 +6,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 
-import com.lling.photopicker.beans.Photo;
-import com.lling.photopicker.beans.PhotoFolder;
+import com.lling.photopickerr.beans.Photo;
+import com.lling.photopickerr.beans.PhotoFolder;
 
 import java.io.File;
 import java.util.ArrayList;

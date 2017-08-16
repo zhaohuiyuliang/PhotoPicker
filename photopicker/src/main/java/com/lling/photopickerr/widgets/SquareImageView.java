@@ -1,10 +1,10 @@
-package com.lling.photopicker.widgets;
+package com.lling.photopickerr.widgets;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-import com.lling.photopicker.utils.OtherUtils;
+import com.lling.photopickerr.utils.OtherUtils;
 
 /**
  * @Class: SquareImageView

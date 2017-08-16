@@ -1,4 +1,4 @@
-package com.lling.photopicker;
+package com.lling.photopickerr;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -21,12 +21,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.lling.photopicker.adapters.FolderAdapter;
-import com.lling.photopicker.adapters.PhotoAdapter;
-import com.lling.photopicker.beans.Photo;
-import com.lling.photopicker.beans.PhotoFolder;
-import com.lling.photopicker.utils.OtherUtils;
-import com.lling.photopicker.utils.PhotoUtils;
+import com.lling.photopickerr.adapters.PhotoAdapter;
+import com.lling.photopickerr.beans.Photo;
+import com.lling.photopickerr.beans.PhotoFolder;
+import com.lling.photopickerr.utils.OtherUtils;
+import com.lling.photopickerr.utils.PhotoUtils;
+import com.lling.photopickerr.adapters.FolderAdapter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -131,7 +131,7 @@ public class PhotoPickerActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_photo_picker);
+        setContentView(com.lling.photopickerr.R.layout.activity_photo_picker);
         initIntentParams();
         initView();
         if (!OtherUtils.isExternalStorageAvailable()) {
@@ -142,17 +142,17 @@ public class PhotoPickerActivity extends Activity {
     }
 
     private void initView() {
-        mGridView = (GridView) findViewById(R.id.photo_gridview);
-        mPhotoNumTV = (TextView) findViewById(R.id.photo_num);
-        mPhotoNameTV = (TextView) findViewById(R.id.floder_name);
-        findViewById(R.id.bottom_tab_bar).setOnTouchListener(new View.OnTouchListener() {
+        mGridView = (GridView) findViewById(com.lling.photopickerr.R.id.photo_gridview);
+        mPhotoNumTV = (TextView) findViewById(com.lling.photopickerr.R.id.photo_num);
+        mPhotoNameTV = (TextView) findViewById(com.lling.photopickerr.R.id.floder_name);
+        findViewById(com.lling.photopickerr.R.id.bottom_tab_bar).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 //消费触摸事件，防止触摸底部tab栏也会选中图片
                 return true;
             }
         });
-        findViewById(R.id.btn_back).setOnClickListener(new View.OnClickListener() {
+        findViewById(com.lling.photopickerr.R.id.btn_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
@@ -172,8 +172,8 @@ public class PhotoPickerActivity extends Activity {
 
         if (mSelectMode == MODE_MULTI) {
             //如果是多选模式，需要将确定按钮初始化以及绑定事件
-            findViewById(R.id.commit).setVisibility(View.VISIBLE);
-            findViewById(R.id.commit).setOnClickListener(new View.OnClickListener() {
+            findViewById(com.lling.photopickerr.R.id.commit).setVisibility(View.VISIBLE);
+            findViewById(com.lling.photopickerr.R.id.commit).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     List<Photo> mSelectList = mPhotoAdapter.getmSelectedPhotos();
@@ -188,7 +188,7 @@ public class PhotoPickerActivity extends Activity {
         mPhotoLists.addAll(mFolderMap.get(ALL_PHOTO).getPhotoList());
 
         mPhotoNumTV.setText(OtherUtils.formatResourceString(getApplicationContext(),
-                R.string.photos_num, mPhotoLists.size()));
+                com.lling.photopickerr.R.string.photos_num, mPhotoLists.size()));
 
         mPhotoAdapter = new PhotoAdapter(this, mPhotoLists);
 
@@ -251,10 +251,10 @@ public class PhotoPickerActivity extends Activity {
     private void toggleFolderList(final List<PhotoFolder> folders) {
         //初始化文件夹列表
         if (!mIsFolderViewInit) {
-            ViewStub folderStub = (ViewStub) findViewById(R.id.floder_stub);
+            ViewStub folderStub = (ViewStub) findViewById(com.lling.photopickerr.R.id.floder_stub);
             folderStub.inflate();
-            View dimLayout = findViewById(R.id.dim_layout);
-            mFolderListView = (ListView) findViewById(R.id.listview_floder);
+            View dimLayout = findViewById(com.lling.photopickerr.R.id.dim_layout);
+            mFolderListView = (ListView) findViewById(com.lling.photopickerr.R.id.listview_floder);
             final FolderAdapter adapter = new FolderAdapter(this, folders);
             mFolderListView.setAdapter(adapter);
             mFolderListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -277,7 +277,7 @@ public class PhotoPickerActivity extends Activity {
                     //这里重新设置adapter而不是直接notifyDataSetChanged，是让GridView返回顶部
                     mGridView.setAdapter(mPhotoAdapter);
                     mPhotoNumTV.setText(OtherUtils.formatResourceString(getApplicationContext(),
-                            R.string.photos_num, mPhotoLists.size()));
+                            com.lling.photopickerr.R.string.photos_num, mPhotoLists.size()));
                     mPhotoNameTV.setText(folder.getName());
                     toggle();
                 }

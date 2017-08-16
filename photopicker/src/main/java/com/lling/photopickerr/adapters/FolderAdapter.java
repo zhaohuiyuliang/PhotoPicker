@@ -1,4 +1,4 @@
-package com.lling.photopicker.adapters;
+package com.lling.photopickerr.adapters;
 
 import android.content.Context;
 import android.net.Uri;
@@ -9,9 +9,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.lling.photopicker.R;
-import com.lling.photopicker.beans.PhotoFolder;
-import com.lling.photopicker.utils.OtherUtils;
+import com.lling.photopickerr.beans.PhotoFolder;
+import com.lling.photopickerr.utils.OtherUtils;
+import com.lling.photopickerr.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * @Class: FolderAdapter
  * @Description: 图片目录适配器
- * @author: lling(www.liuling123.com)
+ * @author: wangliang
  * @Date: 2015/11/6
  */
 public class FolderAdapter extends BaseAdapter {

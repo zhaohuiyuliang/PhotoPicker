@@ -1,4 +1,4 @@
-package com.lling.photopicker.beans;
+package com.lling.photopickerr.beans;
 
 import java.io.Serializable;
 

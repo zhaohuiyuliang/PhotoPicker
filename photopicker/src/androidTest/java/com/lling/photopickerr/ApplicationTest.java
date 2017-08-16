@@ -1,4 +1,4 @@
-package com.lling.photopickersample;
+package com.lling.photopickerr;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

@@ -1,4 +1,4 @@
-package com.lling.photopickersample;
+package com.lling.photopicker;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -15,9 +15,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 
-import com.lling.photopicker.PhotoPickerActivity;
-import com.lling.photopicker.beans.Photo;
-import com.lling.photopicker.utils.OtherUtils;
+import com.lling.photopickerr.PhotoPickerActivity;
+import com.lling.photopickerr.beans.Photo;
+import com.lling.photopickerr.utils.OtherUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
@@ -138,9 +138,9 @@ public class MainActivity extends Activity {
             this.pathList = listUrls;
             imageLoader_head = com.nostra13.universalimageloader.core.ImageLoader.getInstance();
             options_head = new DisplayImageOptions.Builder()
-                    .showImageOnLoading(com.lling.photopicker.R.drawable.ic_stub) // 设置图片下载期间显示的图片
-                    .showImageForEmptyUri(com.lling.photopicker.R.drawable.ic_stub) // 设置图片URI为空或是错误的时候显示的图片
-                    .showImageOnFail(com.lling.photopicker.R.drawable.ic_stub) // 设置图片加载或解码过程中发生错误显示的图片
+                    .showImageOnLoading(com.lling.photopickerr.R.drawable.ic_stub) // 设置图片下载期间显示的图片
+                    .showImageForEmptyUri(com.lling.photopickerr.R.drawable.ic_stub) // 设置图片URI为空或是错误的时候显示的图片
+                    .showImageOnFail(com.lling.photopickerr.R.drawable.ic_stub) // 设置图片加载或解码过程中发生错误显示的图片
                     .cacheInMemory(true) // 设置下载的图片是否缓存在内存中
                     .cacheOnDisk(true) // 设置下载的图片是否缓存在SD卡中
                     .displayer(new SimpleBitmapDisplayer())
