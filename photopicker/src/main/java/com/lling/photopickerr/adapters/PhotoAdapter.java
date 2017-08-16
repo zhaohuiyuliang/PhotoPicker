@@ -165,7 +165,7 @@ public class PhotoAdapter extends BaseAdapter {
         if (cameraIntent.resolveActivity(mContext.getPackageManager()) != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 mTmpFile = OtherUtils.createFile(mContext);
-                Uri contentUri = FileProvider.getUriForFile(mContext, "com.jishang.yunji.fileprovider", mTmpFile);
+                Uri contentUri = FileProvider.getUriForFile(mContext, "com.lling.photopicker.fileprovider", mTmpFile);
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
 
             } else {
